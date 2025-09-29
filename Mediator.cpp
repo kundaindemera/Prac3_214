@@ -1,31 +1,32 @@
 #include "Mediator.h"
+#include "Command.h"
 #include <iostream>
 
-// User implementation
-User::User(const std::string& name) : name(name) {}
+// Users implementation
+Users::Users(const std::string& name) : name(name) {}
 
-User::~User() {}
+Users::~Users() {}
 
-void User::send(const std::string& message, ChatRoom* room) {
+void Users::send(const std::string& message, ChatRoom* room) {
     room->sendMessage(message, this);
 }
 
-void User::receive(const std::string& message, User* fromUser, ChatRoom* room) {
+void Users::receive(const std::string& message, Users* fromUsers, ChatRoom* room) {
     std::cout << name << " received in " 
               << (dynamic_cast<CtrlCat*>(room) ? "CtrlCat" : "Dogorithm")
-              << ": " << message << " from " << fromUser->getName() << std::endl;
+              << ": " << message << " from " << fromUsers->getName() << std::endl;
 }
 
-std::string User::getName() const {
+std::string Users::getName() const {
     return name;
 }
 
-void User::joinChatRoom(ChatRoom* room) {
+void Users::joinChatRoom(ChatRoom* room) {
     chatRooms.push_back(room);
-    room->registerUser(this);
+    room->registerUsers(this);
 }
 
-void User::leaveChatRoom(ChatRoom* room) {
+void Users::leaveChatRoom(ChatRoom* room) {
     // Manual search instead of using std::find
     size_t i = 0;
     bool found = false;
@@ -38,19 +39,19 @@ void User::leaveChatRoom(ChatRoom* room) {
     
     if(found) {
         chatRooms.erase(chatRooms.begin() + i);
-        room->removeUser(this);
+        room->removeUsers(this);
     }
 }
 
 // CtrlCat implementation
-void CtrlCat::registerUser(User* user) {
+void CtrlCat::registerUsers(Users* user) {
     users.push_back(user);
     std::string message = user->getName() + " joined CtrlCat";
     chatHistory.push_back(message);
     std::cout << message << std::endl;
 }
 
-void CtrlCat::removeUser(User* user) {
+void CtrlCat::removeUsers(Users* user) {
     // Manual search instead of using std::find
     size_t i = 0; 
     bool found = false;
@@ -69,29 +70,29 @@ void CtrlCat::removeUser(User* user) {
     }
 }
 
-void CtrlCat::sendMessage(const std::string& message, User* fromUser) {
-    std::string formattedMessage = fromUser->getName() + ": " + message;
+void CtrlCat::sendMessage(const std::string& message, Users* fromUsers) {
+    std::string formattedMessage = fromUsers->getName() + ": " + message;
     chatHistory.push_back(formattedMessage);
-    receiveMessage(message, fromUser);
+    receiveMessage(message, fromUsers);
 }
 
-void CtrlCat::receiveMessage(const std::string& message, User* fromUser) {
-    for (User* user : users) {
-        if (user != fromUser) {
-            user->receive(message, fromUser, this);
+void CtrlCat::receiveMessage(const std::string& message, Users* fromUsers) {
+    for (Users* user : users) {
+        if (user != fromUsers) {
+            user->receive(message, fromUsers, this);
         }
     }
 }
 
 // Dogorithm implementation
-void Dogorithm::registerUser(User* user) {
+void Dogorithm::registerUsers(Users* user) {
     users.push_back(user);
     std::string message = user->getName() + " joined Dogorithm";
     chatHistory.push_back(message);
     std::cout << message << std::endl;
 }
 
-void Dogorithm::removeUser(User* user) {
+void Dogorithm::removeUsers(Users* user) {
     // Manual search instead of using std::find
     size_t i = 0;
     bool found = false;
@@ -110,21 +111,21 @@ void Dogorithm::removeUser(User* user) {
     }
 }
 
-void Dogorithm::sendMessage(const std::string& message, User* fromUser) {
-    std::string formattedMessage = fromUser->getName() + ": " + message;
+void Dogorithm::sendMessage(const std::string& message, Users* fromUsers) {
+    std::string formattedMessage = fromUsers->getName() + ": " + message;
     chatHistory.push_back(formattedMessage);
-    receiveMessage(message, fromUser);
+    receiveMessage(message, fromUsers);
 }
 
-void Dogorithm::receiveMessage(const std::string& message, User* fromUser) {
-    for (User* user : users) {
-        if (user != fromUser) {
-            user->receive(message, fromUser, this);
+void Dogorithm::receiveMessage(const std::string& message, Users* fromUsers) {
+    for (Users* user : users) {
+        if (user != fromUsers) {
+            user->receive(message, fromUsers, this);
         }
     }
 }
 
-// Concrete Users
-Name1::Name1() : User("Alice") {}
-Name2::Name2() : User("Bob") {}
-Name3::Name3() : User("Charlie") {}
+// Concrete Userss
+Name1::Name1() : Users("Alice") {}
+Name2::Name2() : Users("Bob") {}
+Name3::Name3() : Users("Charlie") {}

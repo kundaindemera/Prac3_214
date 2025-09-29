@@ -1,20 +1,20 @@
 #include "Iterator.h"
 #include "Mediator.h"
 
-// UserIterator implementation
-UserIterator::UserIterator(const std::vector<User*>& users)
+// UsersIterator implementation
+UsersIterator::UsersIterator(const std::vector<Users*>& users)
     : users(users), position(0) {}
 
-bool UserIterator::hasNext() const {
+bool UsersIterator::hasNext() const {
     return position < users.size();
 }
 
-void* UserIterator::next() {
+void* UsersIterator::next() {
     return hasNext() ? (void*)users[position++] : nullptr;
 }
 
-User* UserIterator::nextUser() {
-    return static_cast<User*>(next());
+Users* UsersIterator::nextUsers() {
+    return static_cast<Users*>(next());
 }
 
 // MessageIterator implementation
@@ -35,8 +35,8 @@ std::string MessageIterator::nextMessage() {
 }
 
 // Factory implementation
-UserIterator* ChatRoomIteratorFactory::createUserIterator(const ChatRoom* chatRoom) {
-    return new UserIterator(chatRoom->getUsers());
+UsersIterator* ChatRoomIteratorFactory::createUsersIterator(const ChatRoom* chatRoom) {
+    return new UsersIterator(chatRoom->getUserss());
 }
 
 MessageIterator* ChatRoomIteratorFactory::createMessageIterator(const ChatRoom* chatRoom) {

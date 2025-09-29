@@ -5,7 +5,7 @@
 #include <string>
 
 // Forward declarations
-class User;
+class Users;
 class ChatRoom;
 
 // Iterator interface
@@ -17,16 +17,16 @@ public:
 };
 
 // Concrete Iterator for users
-class UserIterator : public Iterator {
+class UsersIterator : public Iterator {
 private:
-    const std::vector<User*>& users;
+    const std::vector<Users*>& users;
     size_t position;
 
 public:
-    UserIterator(const std::vector<User*>& users);
+    UsersIterator(const std::vector<Users*>& users);
     bool hasNext() const override;
     void* next() override;
-    User* nextUser();  // Helper method that casts the result
+    Users* nextUsers();  // Helper method that casts the result
 };
 
 // Concrete Iterator for messages
@@ -45,7 +45,7 @@ public:
 // Factory for creating iterators
 class ChatRoomIteratorFactory {
 public:
-    static UserIterator* createUserIterator(const ChatRoom* chatRoom);
+    static UsersIterator* createUsersIterator(const ChatRoom* chatRoom);
     static MessageIterator* createMessageIterator(const ChatRoom* chatRoom);
 };
 
