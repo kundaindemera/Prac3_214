@@ -7,6 +7,7 @@ void SendMessageCommand::execute()
 {
     if (room && fromUser){
         room->sendMessage(message, fromUser);
+        room->notifyObservers(message, fromUser);
     }
 }
 
@@ -17,32 +18,32 @@ void LogMessageCommand::execute()
     }
 }
 
-// void ModerateMessageCommand::execute(){
-//     if (message.find("snake") != string::npos || message.find("snakes") != string::npos){
-//         cout<<"Message blocked due to triggering content: " << message << endl;
-//         return;
-//     }
-// }
-
-
-void SendNotificationCommand::execute(){
-    if (room && fromUser){
-        string notification = fromUser->getName() + " has sent a new message in the chat.";
-        room->sendMessage(notification, fromUser);
-    }
-}
-
 //Users
 
+void Users::joinRoom(ChatRoom* room){
+    chatRooms.push_back(room);
+    room->registerUser(this);
+}
+void Users::leaveRoom(ChatRoom* room){
+    vector<ChatRoom*> newRooms;
+    for (size_t i=0; i < chatRooms.size(); i++){
+        if (chatRooms[i] != room){
+            newRooms.push_back(chatRooms[i]);
+        }
+    }
+    chatRooms = newRooms;
+    room->removeUser(this);
+}
+
 void Users::send(const string &message, ChatRoom *room)
-{
+{   
+    if (!room) return;
     //create command objects, add to queue and then execute command in order
     if (message.find("snake") != string::npos || message.find("snakes") != string::npos){
         cout<<"Message blocked due to triggering content: " << message << endl;
         return;
     }
     addCommand(new SendMessageCommand(room, message, this)); 
-    addCommand(new SendNotificationCommand(room, message, this)); //notify other users
     addCommand(new LogMessageCommand(room, message, this)); //save message command
     executeAll();
 }
@@ -64,15 +65,31 @@ void Users::executeAll()
     commandQueue.clear(); //clear queue after executing all commands
 }
 
+void Users::update(const string& message, const string& sender, ChatRoom* room){
+    if (sender != name){
+        cout << "[Notification] " << sender << " sent a message in " << room->getName() << " : " << message << endl;
+    }
+}
+
 //ChatRoom
 
 void ChatRoom::registerUser(Users *user)
-{
-    users.push_back(user);
-    cout << user->getName() << " has entered the villa."<< endl;
+{   
+    bool exists = false;
+    for (size_t i=0; i < users.size(); i++){
+        if (users[i] == user){
+            exists = true;
+            break;
+        }
+    }
+    if (!exists){
+        users.push_back(user);
+        observers.push_back(user);
+        cout << user->getName() << " has joined the room " << name << "." << endl;
+    }
 }
 
-void ChatRoom::sendMessage(const string &message, Users *fromUser)
+void ChatRoom::sendMessage(const string &message, Users *fromUser) //send to users then notify observers
 {
     for (Users* user: users){
         if (user != fromUser){
@@ -95,5 +112,21 @@ void ChatRoom::removeUser(Users *user)
         }
     }
     users = newUsers;
-    cout << user->getName() << " has been dumped from the villa."<<endl;
+
+    vector<Users*> newObservers;
+    for (size_t i=0; i < observers.size(); i++){
+        if (observers[i] != user){
+            newObservers.push_back(observers[i]);
+        }
+    }
+    observers = newObservers;
+    cout << user->getName() << " has left the room."<<endl;
+}
+
+void ChatRoom::notifyObservers(const string& message, Users* fromUser){
+    for (Users* o:observers){
+        if (o != fromUser){
+            o->update(message, fromUser->getName(), this);
+        }
+    }
 }
