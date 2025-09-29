@@ -52,7 +52,7 @@ void CtrlCat::registerUser(User* user) {
 
 void CtrlCat::removeUser(User* user) {
     // Manual search instead of using std::find
-    size_t i = 0;
+    size_t i = 0; 
     bool found = false;
     for(; i < users.size(); i++) {
         if(users[i] == user) {
