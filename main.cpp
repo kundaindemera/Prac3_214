@@ -1,4 +1,5 @@
 #include "Mediator.h"
+#include "Iterator.h"
 #include <iostream>
 
 int main() {
@@ -40,6 +41,51 @@ int main() {
     
     // Bob tries to send a message to Alice, but she already left
     bob->send("Alice, are you still there?", ctrlCat);
+
+    std::cout << "\n=== Showing all users in CtrlCat  ===" << std::endl; 
+    UserIterator* cUserIt = ChatRoomIteratorFactory::createUserIterator(ctrlCat);
+    while (cUserIt->hasNext()){
+        User* user = cUserIt->nextUser();
+        if (user){
+            std::cout << user->getName() << std::endl;
+        }
+    }
+
+    delete cUserIt;
+
+
+    std::cout << "\n=== Showing all messages in CtrlCat  ===" << std::endl; 
+    MessageIterator* cMessageIt = ChatRoomIteratorFactory::createMessageIterator(ctrlCat);
+    while (cMessageIt->hasNext()){
+        std::string message = cMessageIt->nextMessage();
+        std::cout << message << std::endl;
+    }
+
+    delete cMessageIt;
+
+
+    std::cout << "\n=== Showing all users in Dogorithm  ===" << std::endl; 
+    UserIterator* dUserIt = ChatRoomIteratorFactory::createUserIterator(dogorithm);
+    while (dUserIt->hasNext()){
+        User* user = dUserIt->nextUser();
+        if (user){
+            std::cout << user->getName() << std::endl;
+        }
+    }
+
+    delete dUserIt;
+
+
+    std::cout << "\n=== Showing all messages in Dogorithm  ===" << std::endl; 
+    MessageIterator* dMessageIt = ChatRoomIteratorFactory::createMessageIterator(dogorithm);
+    while (dMessageIt->hasNext()){
+        std::string message = dMessageIt->nextMessage();
+        std::cout << message << std::endl;
+    }
+
+    delete dMessageIt;
+    
+    
     
     // Clean up
     delete ctrlCat;
@@ -47,6 +93,8 @@ int main() {
     delete alice;
     delete bob;
     delete charlie;
+    
+    
     
     return 0;
 }
