@@ -1,50 +1,26 @@
+/**
+ * @file Mediator.h
+ * @brief Includes concrete chat room class definitions
+ *
+ * This file defines concrete chat room classes that inherit from the ChatRoom class
+ * defined in Command.h. These classes represent specific chat rooms with predefined names.
+ * 
+ *
+ * @date 2025-09-30
+ * @author Mosa Leiee and Kundai Ndemera
+ */
+
 #ifndef MEDIATOR_H
 #define MEDIATOR_H
 
 #include <string>
-#include <vector>
+#include "Command.h" // Use your canonical Users and ChatRoom
 
-// Forward declaration
-class Users;
-
-// Mediator interface
-class ChatRoom {
-protected:
-    std::vector<Users*> users;
-    std::vector<std::string> chatHistory;
-
-public:
-    virtual ~ChatRoom() {}
-    virtual void registerUsers(Users* user) = 0;
-    virtual void removeUsers(Users* user) = 0;
-    virtual void sendMessage(const std::string& message, Users* fromUsers) = 0;
-    virtual void receiveMessage(const std::string& message, Users* fromUsers) = 0;
-    
-    // For iterators
-    const std::vector<Users*>& getUserss() const { return users; }
-    const std::vector<std::string>& getChatHistory() const { return chatHistory; }
-};
-
-// Users class
-class Users {
-protected:
-    std::string name;
-    std::vector<ChatRoom*> chatRooms;
-
-public:
-    Users(const std::string& name);
-    virtual ~Users();
-    
-    void send(const std::string& message, ChatRoom* room);
-    void receive(const std::string& message, Users* fromUsers, ChatRoom* room);
-    std::string getName() const;
-    void joinChatRoom(ChatRoom* room);
-    void leaveChatRoom(ChatRoom* room);
-};
-
-// Concrete ChatRoom implementations
+// Concrete chat rooms that reuse ChatRoom implementation from Command.h.
+// They simply call the ChatRoom(string name) constructor.
 class CtrlCat : public ChatRoom {
 public:
+    CtrlCat() : ChatRoom("CtrlCat") {}
     void registerUsers(Users* user) override;
     void removeUsers(Users* user) override;
     void sendMessage(const std::string& message, Users* fromUsers) override;
@@ -53,6 +29,7 @@ public:
 
 class Dogorithm : public ChatRoom {
 public:
+    Dogorithm() : ChatRoom("Dogorithm") {}
     void registerUsers(Users* user) override;
     void removeUsers(Users* user) override;
     void sendMessage(const std::string& message, Users* fromUsers) override;

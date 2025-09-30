@@ -1,3 +1,16 @@
+/**
+ * @file Command.h
+ * @brief Includes Command, Users, and ChatRoom class definitions.
+ *
+ * This file defines the Command pattern implementation for a chat room system,
+ * including command classes for sending and logging messages, as well as
+ * user and chat room management. It also incorporates the Observer pattern for
+ * user notifications.
+ *
+ * @date 2025-09-30
+ * @author Mosa Leiee and Kundai Ndemera
+ */
+
 #ifndef COMMAND_H
 #define COMMAND_H
 #include "iostream"
@@ -53,21 +66,25 @@ class Users : public Observer{
 };
 
 class ChatRoom{
-    private:
+    protected:
         vector <Users*> users; //keeps track of all users in this chat room
         vector <string> chatHistory; //stores all messages sent in chat room
         vector<Users*> observers;
         string name;
     public:
         ChatRoom(string n): name(n) {}
+        virtual ~ChatRoom() {}
+        virtual void registerUsers(Users* user) { registerUser(user); }
+        virtual void removeUsers(Users* user) { removeUser(user); }
+        virtual void sendMessage(const std::string& message, Users* fromUsers);
+        virtual void receiveMessage(const std::string& message, Users* fromUsers) {}
         void registerUser(Users* user);
-        void sendMessage(const string& message, Users* fromUser); //to all users in the room
-        void saveMessage(const string& message, Users* fromUser); //appends the message to the chat history for later retrieval
         void removeUser(Users* user);
+        void saveMessage(const string& message, Users* fromUser);
         void notifyObservers(const string& message, Users* fromUser);
-        vector<string> getChatHistory() const {return chatHistory;}
+        const vector<string>& getChatHistory() const {return chatHistory;}
         string getName() const {return name;}
-        vector<Users*> getUsers() const {return users;}
+        const vector<Users*>& getUsers() const {return users;}
 };
 
 #endif

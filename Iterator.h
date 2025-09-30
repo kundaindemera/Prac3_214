@@ -1,10 +1,22 @@
+/**
+ * @file Iterator.h
+ * @brief Includes Iterator, concrete iterator and ChatRoomIteratorFactory class definitions
+ *
+ * This file defines the Iterator pattern implementation for iterating over users and messages
+ * in a chat room. It includes concrete iterators for users and messages, as well as
+ * a factory class for creating these iterators.
+ *
+ * @date 2025-09-30
+ * @author Mosa Leiee and Kundai Ndemera
+ */
+
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
 #include <vector>
 #include <string>
 
-// Forward declarations
+// Forward-declare types defined in Command.h
 class Users;
 class ChatRoom;
 
@@ -16,17 +28,17 @@ public:
     virtual void* next() = 0;
 };
 
-// Concrete Iterator for users
-class UsersIterator : public Iterator {
+// Concrete Iterator for users (iterates Users*)
+class UserIterator : public Iterator {
 private:
     const std::vector<Users*>& users;
     size_t position;
 
 public:
-    UsersIterator(const std::vector<Users*>& users);
+    UserIterator(const std::vector<Users*>& users);
     bool hasNext() const override;
     void* next() override;
-    Users* nextUsers();  // Helper method that casts the result
+    Users* nextUser();  // Helper method that casts the result
 };
 
 // Concrete Iterator for messages
@@ -45,7 +57,7 @@ public:
 // Factory for creating iterators
 class ChatRoomIteratorFactory {
 public:
-    static UsersIterator* createUsersIterator(const ChatRoom* chatRoom);
+    static UserIterator* createUserIterator(const ChatRoom* chatRoom);
     static MessageIterator* createMessageIterator(const ChatRoom* chatRoom);
 };
 
